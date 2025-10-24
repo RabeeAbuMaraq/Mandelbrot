@@ -153,7 +153,7 @@ Contributions are welcome! Here are some ways you can help:
 ### Development Setup
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/yourusername/mandelbrot-explorer.git`
+2. Clone your fork: `git clone https://github.com/rabeeabumaraq/mandelbrot.git`
 3. Make your changes
 4. Test thoroughly
 5. Submit a pull request
@@ -188,6 +188,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 **Enjoy exploring the infinite! 🌌**
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/mandelbrot-explorer?style=social)](https://github.com/yourusername/mandelbrot-explorer)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/mandelbrot-explorer?style=social)](https://github.com/yourusername/mandelbrot-explorer)
-[![GitHub issues](https://img.shields.io/github/issues/yourusername/mandelbrot-explorer)](https://github.com/yourusername/mandelbrot-explorer/issues)
+[![GitHub stars](https://img.shields.io/github/stars/rabeeabumaraq/mandelbrot?style=social)](https://github.com/rabeeabumaraq/mandelbrot)
+[![GitHub forks](https://img.shields.io/github/forks/rabeeabumaraq/mandelbrot?style=social)](https://github.com/rabeeabumaraq/mandelbrot)
+[![GitHub issues](https://img.shields.io/github/issues/rabeeabumaraq/mandelbrot)](https://github.com/rabeeabumaraq/mandelbrot/issues)
