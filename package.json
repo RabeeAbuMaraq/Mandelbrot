@@ -1,0 +1,62 @@
+{
+  "name": "madelbrot",
+  "version": "1.0.0",
+  "description": "An interactive, GPU-accelerated Mandelbrot set explorer built with WebGL and vanilla JavaScript",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve . -l 3000",
+    "build": "echo 'No build process needed - pure vanilla JavaScript!'",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'No linting configured'",
+    "serve": "npx serve . -s"
+  },
+  "keywords": [
+    "mandelbrot",
+    "fractal",
+    "webgl",
+    "mathematics",
+    "visualization",
+    "interactive",
+    "canvas",
+    "javascript",
+    "gpu",
+    "shader",
+    "complex-numbers",
+    "mathematical-art"
+  ],
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@example.com",
+    "url": "https://github.com/yourusername"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rabeeabumaraq/madelbrot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rabeeabumaraq/madelbrot/issues"
+  },
+  "homepage": "https://github.com/rabeeabumaraq/madelbrot#readme",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "files": [
+    "index.html",
+    "mandelbrot-explorer.js",
+    "mandelbrot-worker.js",
+    "README.md",
+    "package.json",
+    ".gitignore"
+  ]
+}

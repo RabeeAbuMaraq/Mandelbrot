@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Mandelbrot Set Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            cursor: crosshair;
+            z-index: 1;
+            background: #000;
+            display: block;
+        }
+
+        .ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px;
+        }
+
+        .top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: auto;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .controls-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .color-themes {
+            position: absolute;
+            top: 50%;
+            right: 24px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .theme-btn {
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .theme-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .theme-btn.active {
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .theme-btn.active::after {
+            opacity: 1;
+        }
+
+        .theme-btn[data-scheme="0"] {
+            color: #007AFF;
+        }
+
+        .theme-btn[data-scheme="1"] {
+            color: #FF6B35;
+        }
+
+        .theme-btn[data-scheme="2"] {
+            color: #00BFFF;
+        }
+
+        .theme-btn[data-scheme="3"] {
+            color: #FF1493;
+        }
+
+        .theme-btn[data-scheme="4"] {
+            color: #fff;
+        }
+
+        .theme-btn[data-scheme="5"] {
+            color: #9370DB;
+        }
+
+        .bottom-info {
+            display: flex;
+            gap: 32px;
+            pointer-events: auto;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .label {
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .value {
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.9);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .instructions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .instructions.hidden {
+            opacity: 0;
+        }
+
+        .instruction-text h2 {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .instruction-text p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-text {
+            margin-top: 15px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .ui-overlay {
+                padding: 16px;
+            }
+            
+            .color-themes {
+                right: 16px;
+            }
+            
+            .bottom-info {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="ui-overlay">
+        <div class="top-controls">
+            <div class="logo">Mandelbrot Explorer</div>
+            <div class="controls-group">
+                <button class="control-btn" id="reset-btn" title="Reset View">↻</button>
+                <button class="control-btn" id="smoothing-btn" title="Toggle Smoothing">S</button>
+                <button class="control-btn" id="antialiasing-btn" title="Toggle Anti-aliasing">A</button>
+                <button class="control-btn" id="fullscreen-btn" title="Fullscreen">⛶</button>
+                <button class="control-btn" id="download-btn" title="Download">↓</button>
+            </div>
+        </div>
+        
+        <div class="color-themes">
+            <button class="theme-btn active" data-scheme="0" title="Classic">◯</button>
+            <button class="theme-btn" data-scheme="1" title="Fire">◯</button>
+            <button class="theme-btn" data-scheme="2" title="Ocean">◯</button>
+            <button class="theme-btn" data-scheme="3" title="Psychedelic">◯</button>
+            <button class="theme-btn" data-scheme="4" title="Monochrome">◯</button>
+            <button class="theme-btn" data-scheme="5" title="Ultra Smooth">◯</button>
+        </div>
+        
+        <div class="bottom-info">
+            <div class="info-item">
+                <span class="label">Zoom</span>
+                <span class="value" id="zoom-value">1.0×</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Center</span>
+                <span class="value" id="center-value">0, 0</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Quality</span>
+                <span class="value" id="quality-value">Ultra</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Mode</span>
+                <span class="value" id="mode-value">GPU</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Iterations</span>
+                <span class="value" id="iterations-value">2000</span>
+            </div>
+        </div>
+        
+        <div class="instructions" id="instructions">
+            <div class="instruction-text">
+                <h2>Explore the Infinite</h2>
+                <p>Scroll to zoom • Drag to pan • 1-6 for colors • S for smoothing • A for anti-aliasing</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loading-text">Rendering...</div>
+    </div>
+    
+    <script src="mandelbrot-explorer.js"></script>
+</body>
+</html>
